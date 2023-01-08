@@ -1,25 +1,50 @@
-import { HomeIcon } from "@heroicons/react/24/solid";
+import { HomeIcon, PlusIcon, UserIcon } from "@heroicons/react/24/solid";
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 const Sidebar = () => {
   return (
-    <nav class="flex flex-col items-center m-10">
-      <ul class="w-60 space-y-1">
+    <nav className="flex flex-col items-center m-10 mt-0">
+      <ul className="w-60 space-y-3">
         <li>
-          <Link
-            to="/login"
-            className="flex items-center justify-between bg-gray-800 hover:bg-gray-700 px-4 py-3 rounded-md cursor-pointer"
+          <NavLink
+            to="/home"
+            className={`flex items-center justify-between bg-gray-800 hover:bg-gray-700 px-4 py-3 rounded-md cursor-pointer ${(
+              isActive
+            ) => isActive && `activeStyle`}`}
           >
-            <div class="flex items-center space-x-3">
-              <span class="icon">
+            <div className="flex items-center space-x-3">
+              <span className="icon">
                 <HomeIcon className="h-6 w-6" />
               </span>
               <h3>Home</h3>
             </div>
-            <span class="badge-count text-center text-xs rounded-full px-3 py-1 bg-gray-600 font-semibold">
-              4
-            </span>
-          </Link>
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/myposts"
+            className="flex items-center justify-between bg-gray-800 hover:bg-gray-700 px-4 py-3 rounded-md cursor-pointer"
+          >
+            <div className="flex items-center space-x-3">
+              <span className="icon">
+                <UserIcon className="h-6 w-6" />
+              </span>
+              <h3>My Posts</h3>
+            </div>
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/addpost"
+            className="flex items-center justify-between bg-gray-800 hover:bg-gray-700 px-4 py-3 rounded-md cursor-pointer"
+          >
+            <div className="flex items-center space-x-3">
+              <span className="icon">
+                <PlusIcon className="h-6 w-6" />
+              </span>
+              <h3>Add Post</h3>
+            </div>
+          </NavLink>
         </li>
       </ul>
     </nav>

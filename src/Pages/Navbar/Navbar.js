@@ -1,8 +1,23 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../Contexts/AuthProvider";
 
 const Navbar = () => {
   const [navbar, setNavbar] = useState(false);
+  const { user, logOutUser } = useContext(AuthContext);
+
+  const handleLogOut = () => {
+    logOutUser()
+      .then((result) => {
+        toast.success("Logout successful");
+        localStorage.removeItem("sedide-token");
+      })
+      .catch((err) => {
+        toast.error(err.message);
+      });
+  };
+
   return (
     <nav className="w-full text-gray-50 bg-[#141a29] backdrop-blur-md border-gray-700 border-b py-2">
       <div className="justify-between px-4 mx-auto lg:max-w-7xl md:items-center md:flex md:px-8">
@@ -61,7 +76,11 @@ const Navbar = () => {
           >
             <ul className="items-center justify-center md:flex md:space-x-6 md:space-y-0 text-xl">
               <li className="font-medium transition-all duration-500 px-4 py-2 rounded bg-gray-800 shadow shadow-indigo-200 hover:shadow-none">
-                <Link to="/login">Login</Link>
+                {user?.email ? (
+                  <button onClick={handleLogOut}>Logout</button>
+                ) : (
+                  <Link to="/login">Login</Link>
+                )}
               </li>
             </ul>
           </div>

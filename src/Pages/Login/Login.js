@@ -2,11 +2,13 @@ import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import SmallSpinner from "../../Components/SmallSpinner";
 import { AuthContext } from "../../Contexts/AuthProvider";
 
 const Login = () => {
   const { loginUser, googleSignIn } = useContext(AuthContext);
   const [authError, setAuthError] = useState("");
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -15,14 +17,24 @@ const Login = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log(data);
+    setAuthError("");
+    setLoading(true);
+    loginUser(data.email, data.password)
+      .then((result) => {
+        toast.success("Login successful");
+        reset();
+        setLoading(false);
+      })
+      .catch((err) => {
+        setAuthError(err);
+        setLoading(false);
+      });
   };
 
   // Google signin
   const handleGoogleSignIn = () => {
     googleSignIn()
       .then((result) => {
-        const user = result.user;
         toast.success("Login successful");
       })
       .catch((err) => {
@@ -85,9 +97,11 @@ const Login = () => {
             )}
           </div>
           <div>
-            {authError && <p className="text-red-500">{authError.message}</p>}
+            {authError && (
+              <p className="text-red-500 my-1">{authError.message}</p>
+            )}
             <button className="w-full bg-indigo-600 text-white rounded-md p-2">
-              Register
+              {loading ? <SmallSpinner /> : "Login"}
             </button>
           </div>
         </form>

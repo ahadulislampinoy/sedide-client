@@ -1,10 +1,54 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import LargeSpinner from "../../Components/LargeSpinner";
 
 const Home = () => {
+  const [loading, setLoading] = useState(false);
+  const [posts, setPosts] = useState([]);
+  useEffect(() => {
+    setLoading(true);
+    axios.get(`http://localhost:5000/post`).then((res) => {
+      setPosts(res.data);
+      setLoading(false);
+    });
+  }, []);
   return (
-    <div>
-      <div className="text-4xl">HOME</div>
-    </div>
+    <>
+      {loading ? (
+        <LargeSpinner />
+      ) : (
+        <div className="px-6">
+          {posts.map((post) => (
+            <article
+              key={post._id}
+              className="bg-white text-gray-700 rounded shadow-sm relative my-6"
+            >
+              <div style={{ boxShadow: "inset 0 0 10px #6b4ce645" }}>
+                <img
+                  className="rounded-t max-h-[460px] w-full object-contain py-4"
+                  src={post.image}
+                  alt="Post"
+                />
+              </div>
+              <div className="p-5 bg-gray-200">
+                <p className="text-gray-700">{post.description}</p>
+              </div>
+              <div className="p-5 pt-2 flex bg-gray-200 rounded">
+                <img
+                  className="h-10 w-10 object-cover rounded-full mr-3"
+                  src={post.authorImg}
+                  alt="author"
+                />
+                <div>
+                  <h6>{post.author}</h6>
+                  <p className="text-gray-700 text-sm">{post.date}</p>
+                </div>
+              </div>
+            </article>
+          ))}{" "}
+        </div>
+      )}
+    </>
   );
 };
 

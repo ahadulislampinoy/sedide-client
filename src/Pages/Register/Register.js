@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import welcomeImg from "../../Assets/register.avif";
+import SmallSpinner from "../../Components/SmallSpinner";
+import { AuthContext } from "../../Contexts/AuthProvider";
 
 const Register = () => {
+  const { updateUser, createUser, googleSignIn } = useContext(AuthContext);
   const [imgUrl, setImgUrl] = useState("");
+  const [authError, setAuthError] = useState("");
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -13,7 +19,53 @@ const Register = () => {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log(data);
+    setAuthError("");
+    setLoading(true);
+    // Add image to imgbb
+    const imgbbKey = process.env.REACT_APP_imgbb_apiKey;
+    const formData = new FormData();
+    formData.append("image", data.image[0]);
+    fetch(`https://api.imgbb.com/1/upload?key=${imgbbKey}`, {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then((imgData) => {
+        if (imgData.success) {
+          // Create user
+          createUser(data.email, data.password)
+            .then((result) => {
+              const user = result.user;
+              setLoading(false);
+              reset();
+              setImgUrl("");
+              // Update user
+              updateUser(data.name, imgData.data.display_url)
+                .then((result) => {
+                  console.log("User name, image added");
+                  toast.success("Registration successful");
+                })
+                .catch((err) => {
+                  setAuthError(err);
+                });
+            })
+            .catch((err) => {
+              setAuthError(err);
+              setLoading(false);
+            });
+        }
+      });
+  };
+
+  // Google signin
+  const handleGoogleSignIn = () => {
+    googleSignIn()
+      .then((result) => {
+        toast.success("Login successful");
+      })
+      .catch((err) => {
+        setAuthError(err);
+      });
   };
 
   return (
@@ -74,6 +126,7 @@ const Register = () => {
                   id="dropzone-file"
                   type="file"
                   className="hidden"
+                  accept="image/*"
                   onInputCapture={(e) => setImgUrl(e.target.value.slice(12))}
                   {...register("image", { required: true })}
                 />
@@ -122,8 +175,11 @@ const Register = () => {
               )}
             </div>
             <div>
+              {authError && (
+                <p className="text-red-500 my-1">{authError.message}</p>
+              )}
               <button className="w-full bg-indigo-600 text-white rounded-md p-2">
-                Register
+                {loading ? <SmallSpinner /> : "Register"}
               </button>
             </div>
           </form>
@@ -135,7 +191,10 @@ const Register = () => {
               </span>
             </div>
           </div>
-          <button className="w-full flex items-center justify-center mt-4 text-gray-600 transition-colors duration-300 transform border rounded-lg hover:bg-gray-50 ">
+          <button
+            onClick={handleGoogleSignIn}
+            className="w-full flex items-center justify-center mt-4 text-gray-600 transition-colors duration-300 transform border rounded-lg hover:bg-gray-50 "
+          >
             <div className="px-4 py-2">
               <svg className="w-6 h-6" viewBox="0 0 40 40">
                 <path
