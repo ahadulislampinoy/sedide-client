@@ -7,7 +7,7 @@ const Home = () => {
   const [posts, setPosts] = useState([]);
   useEffect(() => {
     setLoading(true);
-    axios.get(`http://localhost:5000/post`).then((res) => {
+    axios.get(`${process.env.REACT_APP_url}/post`).then((res) => {
       setPosts(res.data);
       setLoading(false);
     });

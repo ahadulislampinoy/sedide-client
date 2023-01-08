@@ -1,16 +1,21 @@
 import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
-import welcomeImg from "../../Assets/register.avif";
+import { Link, useNavigate } from "react-router-dom";
+import SaveUserToDB from "../../Api/SaveUserToDB";
 import SmallSpinner from "../../Components/SmallSpinner";
 import { AuthContext } from "../../Contexts/AuthProvider";
+import UseToken from "../../Hooks/UseToken";
 
 const Register = () => {
   const { updateUser, createUser, googleSignIn } = useContext(AuthContext);
   const [imgUrl, setImgUrl] = useState("");
   const [authError, setAuthError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [token] = UseToken(email);
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -35,14 +40,16 @@ const Register = () => {
           // Create user
           createUser(data.email, data.password)
             .then((result) => {
-              const user = result.user;
               setLoading(false);
               reset();
               setImgUrl("");
               // Update user
               updateUser(data.name, imgData.data.display_url)
                 .then((result) => {
-                  console.log("User name, image added");
+                  const user = result.user;
+                  setEmail(user?.email);
+                  SaveUserToDB(user);
+                  navigate("/");
                   toast.success("Registration successful");
                 })
                 .catch((err) => {
@@ -61,7 +68,10 @@ const Register = () => {
   const handleGoogleSignIn = () => {
     googleSignIn()
       .then((result) => {
+        const user = result.user;
         toast.success("Login successful");
+        setEmail(user?.email);
+        SaveUserToDB(user);
       })
       .catch((err) => {
         setAuthError(err);
@@ -69,7 +79,7 @@ const Register = () => {
   };
 
   return (
-    <section className="relative flex flex-wrap lg:items-center">
+    <section className="min-h-screen flex flex-wrap lg:justify-center lg:items-center">
       <div className="w-full h-full px-4 py-12 sm:px-6 sm:py-16 lg:w-1/2">
         <div className="my-6">
           <h1 className="my-t text-center text-3xl font-extrabold text-gray-100">
@@ -221,14 +231,6 @@ const Register = () => {
             </span>
           </button>
         </div>
-      </div>
-
-      <div className="relative h-screen w-full lg:w-1/2">
-        <img
-          alt="Welcome"
-          src={welcomeImg}
-          className="absolute inset-0 h-full w-full object-cover rounded"
-        />
       </div>
     </section>
   );

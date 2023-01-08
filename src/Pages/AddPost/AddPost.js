@@ -39,14 +39,16 @@ const AddPost = () => {
             authorImg: user?.photoURL,
             date: new Date().toLocaleDateString("en-US"),
           };
-          axios.post(`http://localhost:5000/post`, postDetails).then((res) => {
-            if (res.data.insertedId) {
-              toast.success("Post uploaded");
-              setImgUrl("");
-              setLoading(false);
-              reset();
-            }
-          });
+          axios
+            .post(`${process.env.REACT_APP_url}/post`, postDetails)
+            .then((res) => {
+              if (res.data.insertedId) {
+                toast.success("Post uploaded");
+                setImgUrl("");
+                setLoading(false);
+                reset();
+              }
+            });
         }
       })
       .catch((err) => {

@@ -13,7 +13,7 @@ const EditModal = ({
   const [newDescription, setNewDescription] = useState(postData.description);
   const handleUpdate = () => {
     axios
-      .patch(`http://localhost:5000/updatepost/${postData._id}`, {
+      .patch(`${process.env.REACT_APP_url}/updatepost/${postData._id}`, {
         newDescription,
       })
       .then((res) => {

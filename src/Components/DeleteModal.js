@@ -12,7 +12,7 @@ const DeleteModal = ({
 }) => {
   const handleDelete = () => {
     axios
-      .delete(`http://localhost:5000/deletepost/${postData._id}`)
+      .delete(`${process.env.REACT_APP_url}/deletepost/${postData._id}`)
       .then((res) => {
         if (res.data.deletedCount) {
           toast.success("Post deleted successfully");

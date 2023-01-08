@@ -1,14 +1,21 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import SaveUserToDB from "../../Api/SaveUserToDB";
 import SmallSpinner from "../../Components/SmallSpinner";
 import { AuthContext } from "../../Contexts/AuthProvider";
+import UseToken from "../../Hooks/UseToken";
 
 const Login = () => {
   const { loginUser, googleSignIn } = useContext(AuthContext);
   const [authError, setAuthError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const location = useLocation();
+  const [token] = UseToken(email);
+  const navigate = useNavigate();
+  let from = location?.state?.from?.pathname || "/";
   const {
     register,
     handleSubmit,
@@ -21,6 +28,8 @@ const Login = () => {
     setLoading(true);
     loginUser(data.email, data.password)
       .then((result) => {
+        const user = result.user;
+        setEmail(user?.email);
         toast.success("Login successful");
         reset();
         setLoading(false);
@@ -35,12 +44,22 @@ const Login = () => {
   const handleGoogleSignIn = () => {
     googleSignIn()
       .then((result) => {
+        const user = result.user;
         toast.success("Login successful");
+        setEmail(user?.email);
+        SaveUserToDB(user);
       })
       .catch((err) => {
         setAuthError(err);
       });
   };
+
+  useEffect(() => {
+    if (token) {
+      navigate(from, { replace: true });
+    }
+  }, [from, navigate, token]);
+
   return (
     <main className="min-h-screen flex flex-col items-center justify-center space-y-10 py-12 px-4 sm:px-6 lg:px-8">
       <div>
@@ -61,7 +80,10 @@ const Login = () => {
       <div className="max-w-md w-full mx-auto text-gray-600 font-medium bg-white shadow rounded-lg p-7 space-y-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <div className="flex flex-col">
-            <label className="text-sm font-bold text-gray-600 mb-1" for="email">
+            <label
+              className="text-sm font-bold text-gray-600 mb-1"
+              htmlFor="email"
+            >
               Email Address
             </label>
             <input
@@ -80,7 +102,7 @@ const Login = () => {
           <div className="flex flex-col">
             <label
               className="text-sm font-bold text-gray-600 mb-1"
-              for="password"
+              htmlFor="password"
             >
               Password
             </label>

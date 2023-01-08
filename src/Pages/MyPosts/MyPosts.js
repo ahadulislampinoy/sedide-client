@@ -19,7 +19,7 @@ const MyPosts = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/myposts?email=${user?.email}`)
+      .get(`${process.env.REACT_APP_url}/myposts?email=${user?.email}`)
       .then((res) => {
         setPosts(res.data);
       });
