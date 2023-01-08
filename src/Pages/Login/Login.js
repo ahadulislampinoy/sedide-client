@@ -1,10 +1,12 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../Contexts/AuthProvider";
 
 const Login = () => {
   const { loginUser, googleSignIn } = useContext(AuthContext);
+  const [authError, setAuthError] = useState("");
   const {
     register,
     handleSubmit,
@@ -14,6 +16,18 @@ const Login = () => {
 
   const onSubmit = (data) => {
     console.log(data);
+  };
+
+  // Google signin
+  const handleGoogleSignIn = () => {
+    googleSignIn()
+      .then((result) => {
+        const user = result.user;
+        toast.success("Login successful");
+      })
+      .catch((err) => {
+        setAuthError(err);
+      });
   };
   return (
     <main className="min-h-screen flex flex-col items-center justify-center space-y-10 py-12 px-4 sm:px-6 lg:px-8">
@@ -71,6 +85,7 @@ const Login = () => {
             )}
           </div>
           <div>
+            {authError && <p className="text-red-500">{authError.message}</p>}
             <button className="w-full bg-indigo-600 text-white rounded-md p-2">
               Register
             </button>
@@ -84,7 +99,10 @@ const Login = () => {
             </span>
           </div>
         </div>
-        <button className="w-full flex items-center justify-center mt-4 text-gray-600 transition-colors duration-300 transform border rounded-lg hover:bg-gray-50 ">
+        <button
+          onClick={handleGoogleSignIn}
+          className="w-full flex items-center justify-center mt-4 text-gray-600 transition-colors duration-300 transform border rounded-lg hover:bg-gray-50 "
+        >
           <div className="px-4 py-2">
             <svg className="w-6 h-6" viewBox="0 0 40 40">
               <path
