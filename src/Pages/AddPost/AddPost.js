@@ -3,6 +3,7 @@ import axios from "axios";
 import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import SmallSpinner from "../../Components/SmallSpinner";
 import { AuthContext } from "../../Contexts/AuthProvider";
 
@@ -10,6 +11,7 @@ const AddPost = () => {
   const [imgUrl, setImgUrl] = useState("");
   const { user } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const {
     register,
@@ -37,16 +39,21 @@ const AddPost = () => {
             author: user?.displayName,
             authorEmail: user?.email,
             authorImg: user?.photoURL,
-            date: new Date().toLocaleDateString("en-US"),
+            time: new Date().toString(),
           };
           axios
-            .post(`${process.env.REACT_APP_url}/post`, postDetails)
+            .post(`${process.env.REACT_APP_url}/post`, postDetails, {
+              headers: {
+                authorization: `Bearer ${localStorage.getItem("sedide-token")}`,
+              },
+            })
             .then((res) => {
               if (res.data.insertedId) {
                 toast.success("Post uploaded");
                 setImgUrl("");
                 setLoading(false);
                 reset();
+                navigate("/myposts");
               }
             });
         }

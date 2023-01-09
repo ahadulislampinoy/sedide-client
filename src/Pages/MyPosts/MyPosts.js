@@ -19,7 +19,11 @@ const MyPosts = () => {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_url}/myposts?email=${user?.email}`)
+      .get(`${process.env.REACT_APP_url}/myposts?email=${user?.email}`, {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("sedide-token")}`,
+        },
+      })
       .then((res) => {
         setPosts(res.data);
       });
@@ -31,7 +35,7 @@ const MyPosts = () => {
           No Post Available
         </div>
       ) : (
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6 ">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4">
           {posts.map((post) => (
             <article
               key={post._id}

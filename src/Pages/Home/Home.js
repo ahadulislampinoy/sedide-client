@@ -17,11 +17,11 @@ const Home = () => {
       {loading ? (
         <LargeSpinner />
       ) : (
-        <div className="px-6">
+        <div className="px-4 pb-4 pt-1 md:pt-0">
           {posts.map((post) => (
             <article
               key={post._id}
-              className="bg-white text-gray-700 rounded shadow-sm relative my-6"
+              className="bg-white text-gray-700 rounded shadow-sm relative mt-4"
             >
               <div style={{ boxShadow: "inset 0 0 10px #6b4ce645" }}>
                 <img
@@ -41,7 +41,9 @@ const Home = () => {
                 />
                 <div>
                   <h6>{post.author}</h6>
-                  <p className="text-gray-700 text-sm">{post.date}</p>
+                  <p className="text-gray-700 text-sm">
+                    {post.time.substring(4, 15)}
+                  </p>
                 </div>
               </div>
             </article>

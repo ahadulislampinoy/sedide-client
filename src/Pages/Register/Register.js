@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
@@ -15,6 +15,13 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [token] = UseToken(email);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (token) {
+      navigate("/");
+      window.location.reload();
+    }
+  }, [navigate, token]);
 
   const {
     register,
@@ -40,16 +47,14 @@ const Register = () => {
           // Create user
           createUser(data.email, data.password)
             .then((result) => {
+              const user = result.user;
               setLoading(false);
               reset();
               setImgUrl("");
               // Update user
               updateUser(data.name, imgData.data.display_url)
                 .then((result) => {
-                  const user = result.user;
-                  setEmail(user?.email);
-                  SaveUserToDB(user);
-                  navigate("/");
+                  SaveUserToDB(user, setEmail);
                   toast.success("Registration successful");
                 })
                 .catch((err) => {

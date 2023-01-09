@@ -7,11 +7,11 @@ const Main = () => {
     <section>
       <Navbar />
       <div
-        className="container md:grid justify-center min-h-screen mx-auto py-10"
+        className="container md:grid justify-center mx-auto p-4 pt-10 md:py-10"
         style={{ gridTemplateColumns: "1fr 3fr" }}
       >
         <Sidebar />
-        <div className="bg-gray-700 sm:m-10 md:ml-0 md:mt-0 rounded">
+        <div className="bg-gray-700 min-h-screen rounded">
           <Outlet />
         </div>
       </div>

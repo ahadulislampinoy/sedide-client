@@ -58,7 +58,7 @@ const Navbar = () => {
         </div>
         <div>
           <div
-            className={`flex-1 justify-self-center md:block md:pb-0 md:mt-0 ${
+            className={`flex-1 justify-self-center md:block md:pb-0 mx-4 my-3 md:m-0p ${
               navbar ? "block" : "hidden"
             }`}
           >

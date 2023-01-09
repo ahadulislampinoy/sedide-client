@@ -12,14 +12,17 @@ const DeleteModal = ({
 }) => {
   const handleDelete = () => {
     axios
-      .delete(`${process.env.REACT_APP_url}/deletepost/${postData._id}`)
+      .delete(`${process.env.REACT_APP_url}/deletepost/${postData._id}`, {
+        headers: {
+          authorization: `Bearer ${localStorage.getItem("sedide-token")}`,
+        },
+      })
       .then((res) => {
         if (res.data.deletedCount) {
           toast.success("Post deleted successfully");
-          deleteModalOpen(false);
+          setDeleteModalOpen(false);
         }
       });
-    setDeleteModalOpen(false);
   };
   return (
     <Transition appear show={deleteModalOpen} as={Fragment}>

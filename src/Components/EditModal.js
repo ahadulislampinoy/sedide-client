@@ -13,9 +13,17 @@ const EditModal = ({
   const [newDescription, setNewDescription] = useState(postData.description);
   const handleUpdate = () => {
     axios
-      .patch(`${process.env.REACT_APP_url}/updatepost/${postData._id}`, {
-        newDescription,
-      })
+      .patch(
+        `${process.env.REACT_APP_url}/updatepost/${postData._id}`,
+        {
+          newDescription,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${localStorage.getItem("sedide-token")}`,
+          },
+        }
+      )
       .then((res) => {
         if (res.data.modifiedCount) {
           toast.success("Post updated successfully");
